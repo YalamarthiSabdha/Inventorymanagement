@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Inventory System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 24px; }
+        .back-btn {
+            background: white; color: #667eea; border: none; padding: 8px 20px;
+            border-radius: 5px; cursor: pointer; font-weight: 600; transition: transform 0.2s;
+        }
+        .back-btn:hover { transform: scale(1.05); }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .profile-card {
+            background: white; padding: 40px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center;
+        }
+        .avatar {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 20px; font-size: 48px;
+        }
+        .profile-info { margin-top: 30px; text-align: left; }
+        .info-row {
+            display: flex; justify-content: space-between; padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-label { font-weight: 600; color: #555; }
+        .info-value { color: #667eea; }
+        .badge {
+            background: rgba(102, 126, 234, 0.2); color: #667eea;
+            padding: 5px 15px; border-radius: 20px; font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>👤 User Profile</h1>
+        <button class="back-btn" onclick="window.location.href='dashboard.html'">← Back to Dashboard</button>
+    </div>
+
+    <div class="container">
+        <div class="profile-card">
+            <div class="avatar">👤</div>
+            <h2 id="profileUsername">Loading...</h2>
+            <span class="badge" id="profileRole">Loading...</span>
+            
+            <div class="profile-info">
+                <div class="info-row">
+                    <span class="info-label">Username:</span>
+                    <span class="info-value" id="infoUsername">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Role:</span>
+                    <span class="info-value" id="infoRole">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Session Status:</span>
+                    <span class="info-value">Active</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const username = localStorage.getItem('username');
+        const role = localStorage.getItem('role');
+        
+        if (!username || !role) {
+            window.location.href = '/';
+        }
+
+        document.getElementById('profileUsername').textContent = username;
+        document.getElementById('profileRole').textContent = role;
+        document.getElementById('infoUsername').textContent = username;
+        document.getElementById('infoRole').textContent = role;
+    </script>
+</body>
+</html>

@@ -67,10 +67,16 @@
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             transition: transform 0.3s;
+            cursor: pointer;
         }
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .card:hover h3 {
+            color: white;
         }
         .card h3 {
             color: #667eea;
@@ -147,42 +153,26 @@
 
     <div class="container">
         <div class="cards">
-            <div class="card">
+            <div class="card" onclick="window.location.href='products.html'">
                 <h3>📦 Total Products</h3>
                 <p id="totalProducts">Loading...</p>
             </div>
-            <div class="card">
+            <div class="card" onclick="window.location.href='alerts.html'">
                 <h3>⚠️ Low Stock Alerts</h3>
                 <p id="lowStockCount">Loading...</p>
             </div>
-            <div class="card">
+            <div class="card" onclick="window.location.href='transactions.html'">
                 <h3>📊 Total Transactions</h3>
                 <p id="totalTransactions">Coming soon...</p>
             </div>
-            <div class="card">
+            <div class="card" id="employeeCard" style="display: none;" onclick="window.location.href='employees.html'">
+                <h3>👥 Total Employees</h3>
+                <p id="totalEmployees">Loading...</p>
+            </div>
+            <div class="card" onclick="window.location.href='profile.html'">
                 <h3>👤 Your Role</h3>
                 <p id="userRole">Loading...</p>
             </div>
-        </div>
-
-        <div class="products-section">
-            <h2>Product Inventory</h2>
-            <div id="productsLoading" class="loading">Loading products...</div>
-            <table class="product-table" id="productsTable" style="display: none;">
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>SKU</th>
-                        <th>Category</th>
-                        <th>Quantity</th>
-                        <th>Min Threshold</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody id="productsBody">
-                </tbody>
-            </table>
         </div>
     </div>
 
@@ -205,8 +195,37 @@
             window.location.href = '/';
         }
 
-        // Fetch products
-        async function loadProducts() {
+        // Fetch employee count (Admin only)
+        async function loadEmployees() {
+            if (role !== 'ADMIN') return;
+
+            // Show employee card for admin
+            document.getElementById('employeeCard').style.display = 'block';
+
+            try {
+                const response = await fetch('/api/users', {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+
+                if (response.status === 403 || response.status === 401) {
+                    alert('Session expired. Please login again.');
+                    logout();
+                    return;
+                }
+
+                const users = await response.json();
+                const employees = users.filter(u => u.role === 'EMPLOYEE');
+                
+                document.getElementById('totalEmployees').textContent = employees.length + ' employees registered';
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Fetch product stats only (no table)
+        async function loadProductStats() {
             try {
                 const response = await fetch('/api/products', {
                     headers: {
@@ -221,45 +240,23 @@
                 }
 
                 const products = await response.json();
-                
-                document.getElementById('productsLoading').style.display = 'none';
-                document.getElementById('productsTable').style.display = 'table';
-                
-                const tbody = document.getElementById('productsBody');
-                tbody.innerHTML = '';
-
                 let lowStockCount = 0;
 
                 products.forEach(product => {
                     const isLowStock = product.quantity <= product.minThreshold;
                     if (isLowStock) lowStockCount++;
-
-                    const row = tbody.insertRow();
-                    row.innerHTML = `
-                        <td>${product.name}</td>
-                        <td>${product.sku}</td>
-                        <td>${product.category}</td>
-                        <td>${product.quantity}</td>
-                        <td>${product.minThreshold}</td>
-                        <td>$${product.price}</td>
-                        <td>
-                            ${isLowStock ? 
-                                '<span class="badge-low">Low Stock</span>' : 
-                                '<span class="badge-ok">OK</span>'}
-                        </td>
-                    `;
                 });
 
                 document.getElementById('totalProducts').textContent = products.length + ' products';
                 document.getElementById('lowStockCount').textContent = lowStockCount + ' products need attention';
             } catch (error) {
-                document.getElementById('productsLoading').textContent = 'Error loading products';
                 console.error('Error:', error);
             }
         }
 
         // Load data on page load
-        loadProducts();
+        loadProductStats();
+        loadEmployees();
     </script>
 </body>
 </html>

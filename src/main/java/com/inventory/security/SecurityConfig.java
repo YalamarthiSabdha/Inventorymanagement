@@ -39,7 +39,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/index.html", "/dashboard.html", "/*.css", "/*.js", "/favicon.ico").permitAll()
+                .requestMatchers("/", "/index.html", "/dashboard.html", "/products.html", "/alerts.html", "/transactions.html", "/employees.html", "/profile.html", "/*.css", "/*.js", "/favicon.ico").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/api/products/**").authenticated()
